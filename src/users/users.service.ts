@@ -1,67 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma, User } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
-import { NotFoundError } from './errors/not-found-error';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  private users: User[] = [
-    {
-      id: 1,
-      name: 'Samuel Braga',
-      email: 'samuelfogacadev@gmail.com',
-    },
-  ];
+  async findOne(id: number): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
 
-  create(createUserDto: CreateUserDto) {
-    const currentMaxId = this.users[this.users.length - 1]?.id || 0;
-    const id = currentMaxId + 1;
-
-    const user: User = {
-      id,
-      ...createUserDto,
+  async create(dto: CreateUserDto): Promise<User> {
+    const data: Prisma.UserCreateInput = {
+      ...dto,
     };
 
-    this.users.push(user);
-
-    return user;
+    return this.prisma.user.create({
+      data,
+    });
   }
 
-  findAll() {
-    return this.users;
+  async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
   }
 
-  findOne(id: number) {
-    const user = this.users.find((user: User) => user.id === id);
-
-    if (!user) throw new NotFoundError(`User with id #${id} was not found`);
-
-    return user;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    const user = this.findOne(id);
-
-    const newUser: User = {
-      ...user,
-      ...updateUserDto,
+  async update(id: number, dto: UpdateUserDto): Promise<User> {
+    const data: Prisma.UserUpdateInput = {
+      ...dto,
     };
 
-    const index = this.users.indexOf(user);
-
-    this.users[index] = newUser;
-
-    return newUser;
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
   }
 
-  remove(id: number) {
-    const user = this.findOne(id);
-    const index = this.users.indexOf(user);
-
-    this.users.splice(index, 1);
+  async remove(id: number): Promise<User> {
+    return this.prisma.user.delete({
+      where: { id },
+    });
   }
 }
