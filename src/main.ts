@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { NotFoundInterceptor } from './users/interceptors/entity-not-found-interceptor';
+import { NotFoundInterceptor } from './users/interceptors/entity-not-found.interceptor';
+import { UnauthorizedInterceptor } from './auth/interceptors/unauthorized.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +18,7 @@ async function bootstrap() {
 
   // Interceptor
   app.useGlobalInterceptors(new NotFoundInterceptor());
+  app.useGlobalInterceptors(new UnauthorizedInterceptor());
 
   await app.listen(3000);
 }
