@@ -6,7 +6,7 @@ import { User } from '@prisma/client';
 
 import { UsersService } from 'src/users/users.service';
 
-import { UnauthorizedError } from './errors/unauthorized-error';
+import { UnauthorizedError } from '../errors/unauthorized-error';
 
 import { UserToken } from './model/UserToken';
 import { UserPayload } from './model/UserPayload';
